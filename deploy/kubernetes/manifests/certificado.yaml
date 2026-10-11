@@ -1,0 +1,19 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: sock-shop-selfsigned
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: sock-shop-tls
+  namespace: sock-shop
+spec:
+  secretName: sock-shop-tls
+  issuerRef:
+    name: sock-shop-selfsigned
+    kind: ClusterIssuer
+  dnsNames:
+    - sock-shop.local
