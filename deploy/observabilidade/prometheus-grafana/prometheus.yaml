@@ -8,6 +8,15 @@ data:
     global:
       scrape_interval: 30s
 
+    alerting:
+      alertmanagers:
+        - static_configs:
+            - targets:
+                - "alertmanager.sock-shop.svc.cluster.local:9093"
+
+    rule_files:
+      - /etc/prometheus/alert-rules.yml
+
     scrape_configs:
       - job_name: prometheus
         static_configs:
@@ -17,3 +26,16 @@ data:
         metrics_path: /metrics
         static_configs:
           - targets: ["front-end.sock-shop.svc.cluster.local:80"]
+
+  alert-rules.yml: |
+    groups:
+      - name: disponibilidade
+        rules:
+          - alert: PrometheusTargetDown
+            expr: up == 0
+            for: 1m
+            labels:
+              severity: warning
+            annotations:
+              summary: "Alvo indisponível"
+              description: "O alvo {{ $labels.instance }} está indisponível há mais de 1 minuto."
